@@ -1,5 +1,6 @@
 import { ethers, utils, BigNumber } from "ethers";
 import CryptoJS from "crypto-js";
+import WalletConnect from 'walletconnect';
 import { tokenAddress, tokenABI, uBCAddress, uBCABI } from "./config.js";
 import {
   NoAccountsFoundError,
@@ -13,6 +14,7 @@ export const WalletProviders = {
   metamask: "metamask",
   portis: "portis",
   authereum: "authereum",
+  walletconnect: "walletconnect",
   etherscan: "etherscan",
 };
 
@@ -141,13 +143,13 @@ export class DevcashBounty {
             vueComponent.$store.commit("devcashData/setProvider", null);
             vueComponent.$store.commit("devcashData/setLoggedInAccount", null);
             vueComponent.$store.commit("devcash/setConnector", null);
-            vueComponent.$root.$emit('connectorSet', null)    
+            vueComponent.$root.$emit('connectorSet', null)
             vueComponent.$notify({
               group: 'main',
               title: vueComponent.$t('notification.unknownNetworkTitle'),
               text: vueComponent.$t('notification.unknownNetworkDescription'),
               data: {}
-            })    
+            })
             console.log(e)
           } else {
             console.log(e)
@@ -173,7 +175,7 @@ export class DevcashBounty {
         text: vueComponent.$t('notification.submissionRejectedApprovedDescription'),
         data: {},
         duration: -1,
-      });            
+      });
     } else {
       await vueComponent.$store.state.devcash.connector.approve(submission.ubounty.id, submission.submission_id, feedback)
       vueComponent.$store.state.devcashData.pendingSubStatus.push({
@@ -187,7 +189,7 @@ export class DevcashBounty {
         text: vueComponent.$t('notification.submissionRejectedApprovedDescription'),
         data: {},
         duration: -1
-      });        
+      });
     }
     } catch (e) {
       if ('code' in e && e.code == 4001) {
@@ -204,7 +206,7 @@ export class DevcashBounty {
     } finally {
       vueComponent.isConfirmModalOpen = false;
       vueComponent.confirmWindowOpen = false
-    }    
+    }
   }
 
   /**
@@ -235,9 +237,9 @@ export class DevcashBounty {
 
   /**
    * signIn() - Sign in to specified provider
-   * 
+   *
    * @param {Component} Vue component
-   * @param {*} provider 
+   * @param {*} provider
    */
   static async signIn(vueComponent, provider, hasMetamask, messageToSign) {
     if (provider == WalletProviders.metamask && !hasMetamask) {
@@ -271,19 +273,21 @@ export class DevcashBounty {
           window.open("https://authereum.com/welcome", "_blank");
         } else if (provider == this.walletProviders.portis) {
           window.open("https://wallet.portis.io/", "_blank");
+        } else if (provider == this.walletProviders.walletconnect){
+          window.open("https://trustwallet.com/", "_blank");
         }
       }
       if (e.toString().toLowerCase().includes("contract not deployed") || e.toString().toLowerCase().includes("underlying network changed")) {
         vueComponent.$store.commit("devcashData/setProvider", null);
         vueComponent.$store.commit("devcashData/setLoggedInAccount", null);
         vueComponent.$store.commit("devcash/setConnector", null);
-        vueComponent.$root.$emit('connectorSet', null)    
+        vueComponent.$root.$emit('connectorSet', null)
         vueComponent.$notify({
           group: 'main',
           title: vueComponent.$t('notification.unknownNetworkTitle'),
           text: vueComponent.$t('notification.unknownNetworkDescription'),
           data: {}
-        })    
+        })
         console.log(e)
       } else {
         console.log(e)
@@ -293,7 +297,7 @@ export class DevcashBounty {
 
   /**
    * signOut() - trigger sign out
-   * 
+   *
    * @param {Component} Vue component
    */
   static signOut(vueComponent) {
@@ -360,6 +364,29 @@ export class DevcashBounty {
         ethNetwork
       );
       needsSigner = true;
+    } else if (walletProvider == WalletProviders.walletconnect) {
+      // WalletConnect
+
+      // const WalletConnect = require("walletconnect")
+      const webConnector = new WalletConnect(
+        'http://localhost:5001', // local bridge url, check this:  https://github.com/WalletConnect/node-walletconnect-bridge
+        {
+          dappName: 'BDU.dev'
+        }
+      )
+
+      const session = await webConnector.createSession()
+
+      console.log(session.sessionId) // prints session id
+      console.log(session.sharedKey.toString('hex')) // prints shared private key
+
+      /**
+       *  Listen to session status
+       */
+      // webConnector.listenSessionStatus((err, result) => {
+      //   console.log(result) // check result
+      // })
+
     } else {
       // Etherscan provider (no signer)
       provider = new ethers.getDefaultProvider(
@@ -531,7 +558,7 @@ export class DevcashBounty {
     }
     if (contactEmail && contactEmail.length > 0) {
       ubounty.contactEmail = contactEmail
-    }    
+    }
     if (hasHunter) {
       ubounty.hunter = hunter;
     }
@@ -549,14 +576,14 @@ export class DevcashBounty {
     let submission = {
       creator: creator,
       submissionData: data,
-      ubounty_id: ubounty_id,    
+      ubounty_id: ubounty_id,
     };
     if (contactName && contactName.length > 0) {
       submission.contactName = contactName
     }
     if (contactEmail && contactEmail.length > 0 && !emailRegexp.test(contactEmail)) {
       throw new InvalidEmailError("Contact email is invalid");
-    }    
+    }
     if (contactEmail && contactEmail.length > 0) {
       submission.contactEmail = contactEmail
     }

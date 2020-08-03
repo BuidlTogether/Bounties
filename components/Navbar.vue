@@ -120,7 +120,7 @@
         </transition>
       </div>
       <!-- Notifications New -->
-      <!-- 
+      <!--
         <button
         class="hover:bg-c-text-15 focus:bg-c-text-15 hidden md:block rounded-full lg:ml-2 p-1 transition-all ease-out duration-200"
       >
@@ -225,6 +225,26 @@
                   >{{ $t("wallet.authereum") }}</h4>
                 </div>
               </button>
+              <!-- WalletConnect Button -->
+              <button
+                class="btn-text-ter flex flex-row items-center bg-c-authereum border-2 border-c-authereum transform hover:scale-md focus:scale-md duration-200 ease-out origin-bottom-left rounded-tl-2xl rounded-br-2xl rounded-bl-md rounded-tr-md transition-all duration-200 ease-out overflow-hidden my-2"
+                @click="signIn(walletProviders.walletconnect)"
+                @keydown.esc.exact="hideSignInModal"
+                @keydown.tab.exact="hideSignInModal"
+              >
+                <div class="bg-c-background-ter h-12 w-12 p-2">
+                  <img
+                    class="w-full h-full"
+                    :src="require('~/assets/images/wallet-logos/metamask.svg')"
+                    alt="WalletConnect"
+                  />
+                </div>
+                <div class="flex flex-row flex-1 justify-center">
+                  <h4
+                    class="whitespace-no-wrap text-c-dark text-lg font-extrabold ml-8 mr-10"
+                  >{{ $t("wallet.walletconnect") }}</h4>
+                </div>
+              </button>
             </div>
           </div>
         </transition>
@@ -302,7 +322,7 @@
                 </div>
               </button>
               <!-- Overview Button -->
-            
+
                <nuxt-link
                 :to="localePath('bountyplatform-bountyhunter')"
                 @keydown.esc.exact="hideSignOutModal"
@@ -316,7 +336,7 @@
                   <h3 class="whitespace-no-wrap font-bold">{{$t("bountyPlatform.bountyHunter.header")}}</h3>
                 </div>
               </nuxt-link>
-              
+
                <nuxt-link
                 :to="localePath('bountyplatform-bountymanager')"
                 @keydown.esc.exact="hideSignOutModal"
@@ -481,7 +501,7 @@ export default {
         await DevcashBounty.updateBalances(this)
         await DevcashBounty.updateFees(this)
       }
-    }    
+    }
   },
   computed: {
     // mix the getters into computed with object spread operator
@@ -518,7 +538,7 @@ export default {
     time: 60000,
     method: 'updateBalance'
   },
-  mounted() {  
+  mounted() {
     // Initialize these here since it's client side
     this.hasMetamask = window.ethereum ? true : false;
     this.updateBalance();
@@ -567,7 +587,7 @@ export default {
             bounty: uBountyIndex,
             sub: submissionIndex,
             feedback: feedback
-          })      
+          })
           if (!ref.historicalCreated.includes(asObj)) {
             ref.historicalCreated.push(asObj)
             if (ref.isLoggedIn) {
@@ -582,14 +602,14 @@ export default {
                       href: ref.localePath('bountyplatform-bountyhunter')
                     },
                     duration: -1
-                  });                  
+                  });
                 }
                 ref.$root.$emit("subRejected", {bounty: uBountyIndex, submission: submissionIndex, feedback: feedback})
               } catch (e) {
                 console.log(e)
               }
             }
-          }    
+          }
         });
         connector.uBCContract.on("approved", async (uBountyIndex, submissionIndex, feedback) => {
           let asObj = JSON.stringify({
@@ -597,7 +617,7 @@ export default {
             bounty: uBountyIndex,
             sub: submissionIndex,
             feedback: feedback
-          })      
+          })
           if (!ref.historicalCreated.includes(asObj)) {
             ref.historicalCreated.push(asObj)
             if (ref.isLoggedIn) {
@@ -612,14 +632,14 @@ export default {
                       href: ref.localePath('bountyplatform-bountyhunter')
                     },
                     duration: -1
-                  });                
+                  });
                 }
                 ref.$root.$emit("subApproved", {bounty: uBountyIndex, submission: submissionIndex, feedback: feedback})
               } catch (e) {
                 console.log(e)
               }
             }
-          }    
+          }
         });
         connector.uBCContract.on("submitted", async (uBountyIndex, submissionIndex, event) => {
           let asObj = JSON.stringify({
@@ -647,8 +667,8 @@ export default {
                       this.$root.$emit("newSubmission", {bounty: uBountyIndex, submission: onChainSub.data})
                     } catch (e) {
                       console.log(e)
-                    }    
-                  }, 10000)        
+                    }
+                  }, 10000)
                 } else {
                   setTimeout(async () => {
                     try {
@@ -656,8 +676,8 @@ export default {
                       this.$root.$emit("newSubmission", {bounty: uBountyIndex, submission: onChainSub.data})
                     } catch (e) {
                       console.log(e)
-                    }    
-                  }, 10000)                     
+                    }
+                  }, 10000)
                 }
               } catch (e) {
                 console.log(e)
@@ -668,7 +688,7 @@ export default {
       } else {
         this.ethersListeners = {}
       }
-    })     
+    })
   },
   head(){
     return {

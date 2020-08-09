@@ -225,6 +225,25 @@
                   >{{ $t("wallet.authereum") }}</h4>
                 </div>
               </button>
+              <button
+                class="btn-text-ter flex flex-row items-center bg-c-authereum border-2 border-c-authereum transform hover:scale-md focus:scale-md duration-200 ease-out origin-bottom-left rounded-tl-2xl rounded-br-2xl rounded-bl-md rounded-tr-md transition-all duration-200 ease-out overflow-hidden my-2"
+                @click="signIn(walletProviders.walletconnect)"
+                @keydown.esc.exact="hideSignInModal"
+                @keydown.tab.exact="hideSignInModal"
+              >
+                <div class="bg-c-background-ter h-12 w-12 p-2">
+                  <img
+                    class="w-full h-full"
+                    :src="require('~/assets/images/wallet-logos/authereum.svg')"
+                    alt="Authereum"
+                  />
+                </div>
+                <div class="flex flex-row flex-1 justify-center">
+                  <h4
+                    class="whitespace-no-wrap text-c-dark text-lg font-extrabold ml-8 mr-10"
+                  >{{ $t("wallet.walletconnect") }}</h4>
+                </div>
+              </button>
             </div>
           </div>
         </transition>

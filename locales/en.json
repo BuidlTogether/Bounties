@@ -63,7 +63,8 @@
     "metamask": "MetaMask",
     "getMetamask": "Get MetaMask",
     "portis": "Portis",
-    "authereum": "Authereum"
+    "authereum": "Authereum",
+    "walletconnect":"Wallet Connect"
   },
   "bountyPlatform": {
     "header": "Bounty Platform",

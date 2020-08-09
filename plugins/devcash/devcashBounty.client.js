@@ -1,6 +1,7 @@
 import { ethers, utils, BigNumber } from "ethers";
 import CryptoJS from "crypto-js";
 import { tokenAddress, tokenABI, uBCAddress, uBCABI } from "./config.js";
+import WalletConnectProvider from "@walletconnect/web3-provider";
 import {
   NoAccountsFoundError,
   AccountNotFoundError,
@@ -14,10 +15,11 @@ export const WalletProviders = {
   portis: "portis",
   authereum: "authereum",
   etherscan: "etherscan",
+  walletconnect:"walletconnect"
 };
-
 const emailRegexp = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
-const ethNetwork = process.env.NODE_ENV !== "production" ? "ropsten" : "mainnet"
+const ethNetwork = process.env.NODE_ENV !== "production" ? "ropsten" : "mainnet";
+const infura_ID= process.env.INFURA_PROJECT_ID || '64074292bca44137af981e11f413eae7';
 
 export class DevcashBounty {
   constructor(async_param) {
@@ -360,7 +362,25 @@ export class DevcashBounty {
         ethNetwork
       );
       needsSigner = true;
-    } else {
+    }
+   else if (walletProvider == WalletProviders.walletconnect) {
+    // Portis
+      // Use web3 provider with signer
+      console.log(infura_ID)
+      const w_provider = new WalletConnectProvider({
+        infuraId: infura_ID // Required
+      });
+      
+      //  Enable session (triggers QR Code modal)
+      await w_provider.enable();
+      provider = new ethers.providers.Web3Provider(
+        w_provider,
+        ethNetwork
+      );
+      needsSigner = true;
+    }
+  
+  else {
       // Etherscan provider (no signer)
       provider = new ethers.getDefaultProvider(
         ethNetwork
